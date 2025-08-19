@@ -11,13 +11,13 @@ public class ItemControl : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-
+        health = maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Collider2D collision = Physics2D.OverlapCircle(transform.position, 0.1f, 128);
+        Collider2D collision = Physics2D.OverlapCircle(transform.position, 0.5f, 128);
         if (collision)
         {
             coins++; // Increment coins when colliding with a coin item
@@ -25,5 +25,11 @@ public class ItemControl : MonoBehaviour
             Destroy(collision.gameObject); // Destroy the coin item after collecting it
         }
 
+        Collider2D collision1 = Physics2D.OverlapCircle(transform.position, 0.5f, 256);
+        if (collision1)
+        {
+            health -= 10; // Increment coins when colliding with a coin item
+            Destroy(collision1.gameObject); // Destroy the coin item after collecting it
+        }
     }
 }
