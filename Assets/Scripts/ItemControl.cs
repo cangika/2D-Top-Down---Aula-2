@@ -1,35 +1,63 @@
+// ItemControl.cs
 using UnityEngine;
+using TMPro;
 
 public class ItemControl : MonoBehaviour
 {
-    public int coins; // Number of coins collected
-    public int health; // Health of the player
-    public int maxHealth = 100; // Maximum health of the player
-    AudioSource audioSource; // AudioSource to play sound effects
+    [Header("Player Stats")]
+    public int coins;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Health Settings")]
+    public int maxHealth = 5;
+    private int currentHealth;
+
+    [Header("UI Settings")]
+    public TMP_Text coinText;
+    public HealthUI healthUI; // referência ao script novo
+
+    [Header("Layers")]
+    public LayerMask coinLayer;
+    public LayerMask enemyLayer;
+
+    private AudioSource audioSource;
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        health = maxHealth;
+        currentHealth = maxHealth;
+        healthUI.Setup(maxHealth); // cria os corações
+        UpdateUI();
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        Collider2D collision = Physics2D.OverlapCircle(transform.position, 0.5f, 128);
-        if (collision)
+        if (other.CompareTag("Coin"))
         {
-            coins++; // Increment coins when colliding with a coin item
-            audioSource.Play(); // Play the coin collection sound
-            Destroy(collision.gameObject); // Destroy the coin item after collecting it
+            coins++;
+            if (audioSource != null) audioSource.Play();
+            Destroy(other.gameObject);
+            UpdateUI();
         }
+        else if (other.CompareTag("Enemy"))
+        {
+            TakeDamage(1);
+            Destroy(other.gameObject);
+        }
+    }
 
-        Collider2D collision1 = Physics2D.OverlapCircle(transform.position, 0.5f, 256);
-        if (collision1)
-        {
-            health -= 10; // Increment coins when colliding with a coin item
-            Destroy(collision1.gameObject); // Destroy the coin item after collecting it
-        }
+    public void TakeDamage(int amount)
+    {
+        if (currentHealth <= 0) return;
+
+        currentHealth -= amount;
+        if (currentHealth < 0) currentHealth = 0;
+
+        healthUI.UpdateHearts(currentHealth); // atualiza na UI
+        Debug.Log("Vida Atual: " + currentHealth);
+    }
+
+    void UpdateUI()
+    {
+        if (coinText != null) coinText.text = "Moedas: " + coins.ToString();
     }
 }

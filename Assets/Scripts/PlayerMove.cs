@@ -10,6 +10,7 @@ public class PlayerMove : MonoBehaviour
     //Global variables can be used in any method in this class
     SpriteRenderer spriteRenderer; //SpriteRenderer to change the player's sprite
 
+
     private void Start()
     {
         //Initialize the spriteRenderer variable
